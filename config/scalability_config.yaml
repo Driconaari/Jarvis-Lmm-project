@@ -1,0 +1,70 @@
+# Scalability Configuration for Jarvis
+# Add this to config/jarvis_config.yaml or use ScalabilityConfig in code
+
+scalability:
+  # Enable job queueing system
+  enable_job_queue: true
+  
+  # Enable automatic agent pool scaling
+  enable_auto_scaling: true
+  
+  # Maximum number of jobs that can be queued
+  max_queue_size: 1000
+  
+  # How often to refresh and report statistics (seconds)
+  refresh_interval_seconds: 5
+  
+  # Default scaling parameters for most agents
+  default_pool:
+    min_agents: 1           # Always keep at least 1 agent running
+    max_agents: 5           # Never spawn more than 5 agents of this type
+    scale_up_threshold: 0.75    # Scale up when queue is 75% full relative to agents
+    scale_down_threshold: 0.15  # Scale down when queue is 15% full
+    scale_up_cooldown_seconds: 2       # Wait 2s before scaling up again
+    scale_down_cooldown_seconds: 30    # Wait 30s before scaling down again
+    idle_timeout_seconds: 60            # Remove agents idle for 60s+
+  
+  # Special config for implementation agents (CPU-intensive)
+  implementation_pool:
+    min_agents: 2           # Start with 2 implementation workers
+    max_agents: 10          # Can scale up to 10 parallel workers
+    scale_up_threshold: 0.7     # Scale up more aggressively
+    scale_down_threshold: 0.2   # Scale down when queue nearly empty
+    scale_up_cooldown_seconds: 2
+    scale_down_cooldown_seconds: 10
+    idle_timeout_seconds: 90
+
+# Example Job Submission:
+# 
+# # High priority: Process immediately
+# job1 = await orchestrator.submit_job(
+#     "implementation",
+#     {"task_id": "critical", "code": "..."},
+#     priority=1,              # 1 = highest
+#     max_retries=5
+# )
+#
+# # Normal priority: Process eventually
+# job2 = await orchestrator.submit_job(
+#     "implementation",
+#     {"task_id": "regular", "code": "..."},
+#     priority=5,              # 5 = normal
+#     max_retries=3
+# )
+#
+# # Low priority: Process when idle
+# job3 = await orchestrator.submit_job(
+#     "implementation",
+#     {"task_id": "background", "code": "..."},
+#     priority=9,              # 9 = lowest
+#     max_retries=1
+# )
+#
+# Check job status:
+# status = await orchestrator.get_job_status(job1.job_id)
+# print(f"Job status: {status['status']}")
+#
+# Get system metrics:
+# metrics = await orchestrator.get_system_metrics()
+# print(f"Queue: {metrics['queue']['pending']} pending jobs")
+# print(f"{metrics['pools']['implementation']['total_agents']} implementation workers running")

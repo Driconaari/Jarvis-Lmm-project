@@ -1,0 +1,137 @@
+# ============================================================================
+# Jarvis Configuration - Multi-LLM Orchestrator
+# ============================================================================
+# This configuration defines:
+# 1. Local Ollama endpoints (local LLM servers)
+# 2. Models available on each endpoint
+# 3. Agent-to-endpoint routing
+# 4. Workspace settings
+
+
+# ============================================================================
+# Local LLM Endpoints
+# ============================================================================
+endpoints:
+  - name: "endpoint1"
+    url: "http://localhost:11434"
+    timeout: 120
+    healthcheck_interval: 30
+    models:
+      - name: "mistral:7b"
+        endpoint: "http://localhost:11434"
+        temperature: 0.7
+        top_p: 0.9
+        context_window: 8192
+      - name: "neural-chat:7b"
+        endpoint: "http://localhost:11434"
+        temperature: 0.5
+        top_p: 0.95
+        context_window: 4096
+
+  - name: "endpoint2"
+    url: "http://localhost:11435"
+    timeout: 120
+    healthcheck_interval: 30
+    models:
+      - name: "mistral:7b"
+        endpoint: "http://localhost:11435"
+        temperature: 0.7
+        top_p: 0.9
+        context_window: 8192
+      - name: "openchat"
+        endpoint: "http://localhost:11435"
+        temperature: 0.8
+        top_p: 0.9
+        context_window: 8192
+
+
+# ============================================================================
+# Specialized Agents & Routing
+# ============================================================================
+# Each agent is routed to a specific endpoint for optimal role specialization
+agents:
+  
+  # Architecture Agent: Designs system components and interfaces
+  architecture:
+    name: "architecture"
+    role: "Architecture & Design"
+    model_name: "mistral:7b"
+    endpoint_name: "endpoint1"
+    temperature: 0.7
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 1
+
+  # Tech Lead Agent: Breaks work into tasks and defines acceptance criteria
+  tech_lead:
+    name: "tech_lead"
+    role: "Tech Lead & Planning"
+    model_name: "neural-chat:7b"
+    endpoint_name: "endpoint1"
+    temperature: 0.5
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 1
+
+  # Implementation Agent: Writes code and generates artifacts
+  implementation:
+    name: "implementation"
+    role: "Software Implementation"
+    model_name: "openchat"
+    endpoint_name: "endpoint2"
+    temperature: 0.3
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 2
+
+  # Testing Agent: Creates tests and quality reports
+  testing:
+    name: "testing"
+    role: "Testing & Quality Assurance"
+    model_name: "mistral:7b"
+    endpoint_name: "endpoint1"
+    temperature: 0.5
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 1
+
+  # Documentation Agent: Produces documentation
+  documentation:
+    name: "documentation"
+    role: "Technical Documentation"
+    model_name: "neural-chat:7b"
+    endpoint_name: "endpoint2"
+    temperature: 0.6
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 1
+
+  # Deployment Agent: Validates deployability
+  deployment:
+    name: "deployment"
+    role: "Deployment Validation"
+    model_name: "mistral:7b"
+    endpoint_name: "endpoint1"
+    temperature: 0.5
+    max_retries: 3
+    timeout: 120
+    parallel_workers: 1
+
+
+# ============================================================================
+# Workspace Configuration
+# ============================================================================
+workspace:
+  git_repo: "./output"           # Output repository path
+  artifacts_dir: "artifacts"     # Where to store generated artifacts
+  max_context_tokens: 8000       # Max tokens to preserve in context
+  auto_commit: true              # Auto-commit after each phase
+  review_before_execute: true    # Show diffs before applying changes
+
+
+# ============================================================================
+# Global Settings
+# ============================================================================
+version: "1.0.0"
+log_level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+debug: false                     # Verbose debugging output
