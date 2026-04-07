@@ -6,12 +6,12 @@ Produces: Task tickets, dependencies, acceptance criteria, implementation roadma
 
 from typing import Any, Dict, List
 from datetime import datetime, timedelta
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import json
 
 from jarvis.base_agent import BaseAgent, AgentOutput
 from jarvis.config import AgentConfig
-from langchain_core.language_model import BaseLanguageModel
+from langchain_core.language_models import BaseLanguageModel
 
 
 class TechLeadAgent(BaseAgent):

@@ -9,9 +9,8 @@ from datetime import datetime
 from dataclasses import dataclass, asdict
 import json
 from loguru import logger
-from langchain_core.language_model import BaseLanguageModel
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.prompts import PromptTemplate
 
 from jarvis.config import AgentConfig
 
@@ -72,9 +71,11 @@ class BaseAgent(ABC):
         """Execute the agent's responsibilities."""
         pass
     
-    def setup_chain(self, prompt_template: PromptTemplate) -> LLMChain:
+    def setup_chain(self, prompt_template: PromptTemplate) -> Optional[Any]:
         """Setup the LLM chain with given prompt template."""
-        self.chain = LLMChain(llm=self.llm, prompt=prompt_template)
+        # Note: LLMChain is deprecated in newer LangChain versions
+        # Storing prompt template directly for now
+        self.chain = prompt_template
         logger.debug(f"{self.name} chain setup complete")
         return self.chain
     

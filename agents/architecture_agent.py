@@ -6,12 +6,12 @@ Produces: Component specs, interfaces, ADRs, deployment topology.
 
 from typing import Any, Dict
 from datetime import datetime
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import json
 
 from jarvis.base_agent import BaseAgent, AgentOutput
 from jarvis.config import AgentConfig
-from langchain_core.language_model import BaseLanguageModel
+from langchain_core.language_models import BaseLanguageModel
 
 
 class ArchitectureAgent(BaseAgent):
